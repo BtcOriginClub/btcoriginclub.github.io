@@ -92,3 +92,38 @@ const translations = {
         'join': '¡Únete a la aventura!'
     }
 };
+
+// 切换语言函数
+function changeLanguage() {
+    const language = document.getElementById('languageSelect').value;
+    if (translations[language]) {
+        updatePageContent(language);
+    }
+}
+
+// 更新页面内容
+function updatePageContent(language) {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[language] && translations[language][key]) {
+            element.textContent = translations[language][key];
+        }
+    });
+    document.documentElement.lang = language;
+}
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('languageSelect');
+    if (select) {
+        // 设置默认语言
+        const userLang = navigator.language || navigator.userLanguage;
+        const defaultLang = translations[userLang] ? userLang : 'en';
+        select.value = defaultLang;
+        updatePageContent(defaultLang);
+        
+        // 添加语言切换事件监听
+        select.addEventListener('change', changeLanguage);
+    }
+});
