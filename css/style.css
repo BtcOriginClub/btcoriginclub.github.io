@@ -1,84 +1,110 @@
+/* 基础样式 */
 body {
     font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
+    margin: 0;
     padding: 20px;
     background-color: #f0f0f0;
 }
 
-.language-selector {
-    text-align: right;
-    margin-bottom: 20px;
-}
-
-#languageSelect {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-}
-
 .container {
-    background-color: white;
+    max-width: 800px;
+    margin: 0 auto;
     padding: 20px;
+    background-color: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.language-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+/* 画板样式 */
+.pixel-editor {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.tools {
+    margin-bottom: 10px;
+}
+
+.tool {
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 5px;
+}
+
+.tool.active {
+    background: #e0e0e0;
+    border-color: #999;
+}
+
+#pixelCanvas {
+    border: 1px solid #ccc;
+    background: white;
+    margin: 10px auto;
+    display: block;
+}
+
+.color-presets {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.color-preset {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+#canvasSize {
+    margin: 0 10px;
+    padding: 5px;
+}
+
+#colorPicker {
+    margin: 0 10px;
+    padding: 0;
+    width: 50px;
+    height: 25px;
+    vertical-align: middle;
+}
+
+/* 其他样式 */
 h1 {
     color: #333;
     text-align: center;
 }
 
+p {
+    color: #666;
+    line-height: 1.6;
+}
+
 .features {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
 }
 
 .features li {
     margin: 10px 0;
     padding: 10px;
-    background-color: #f8f8f8;
+    background: #f9f9f9;
     border-radius: 5px;
-}
-
-.token-info {
-    background-color: #f8f8f8;
-    padding: 15px;
-    margin: 20px 0;
-    border-radius: 5px;
-    text-align: center;
 }
 
 .join {
     text-align: center;
+    font-size: 1.2em;
+    color: #333;
     margin-top: 20px;
-    font-weight: bold;
-}
-/* 在文件末尾添加以下代码 */
-.features li {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.features li:hover {
-    background-color: #e8e8e8;
-    transform: translateX(10px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-#languageSelect {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    background-color: white;
-    font-size: 14px;
-}
-
-#languageSelect:hover {
-    border-color: #999;
 }
