@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Editor - BtcOriginClub</title>
+    <link rel="stylesheet" href="css/pixel-editor.css">
+</head>
+<body>
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="zh-TW">繁體中文</option>
+        </select>
+    </div>
+    <div class="editor-container">
+        <div class="toolbar">
+            <div class="tool-group">
+                <button id="pencil" class="tool active" title="画笔">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+                <button id="line" class="tool" title="直线">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M19 13H5v-2h14v2z"/>
+                    </svg>
+                </button>
+                <button id="fill" class="tool" title="填充">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z"/>
+                    </svg>
+                </button>
+                <button id="picker" class="tool" title="取色器">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z"/>
+                    </svg>
+                </button>
+                <button id="eraser" class="tool" title="橡皮擦">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.78-.78 2.05 0 2.83l3.85 3.85c.78.78 2.05.78 2.83 0L20.41 10.27c.78-.78.78-2.05 0-2.83l-3.85-3.85c-.39-.39-.9-.59-1.42-.59z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="color-group">
+                <input type="color" id="colorPicker" value="#000000">
+                <div class="recent-colors">
+                    <div class="recent-color"></div>
+                    <div class="recent-color"></div>
+                    <div class="recent-color"></div>
+                    <div class="recent-color"></div>
+                    <div class="recent-color"></div>
+                </div>
+            </div>
+            <div class="size-group">
+                <select id="canvasSize">
+                    <option value="16">16x16</option>
+                    <option value="32">32x32</option>
+                    <option value="64">64x64</option>
+                </select>
+            </div>
+            <div class="action-group">
+                <button id="clear">Clear</button>
+                <button id="save">Save</button>
+                <a href="index.html" class="back-button">Back to Home</a>
+            </div>
+        </div>
+        <div class="canvas-container">
+            <canvas id="pixelCanvas"></canvas>
+        </div>
+    </div>
+    <script src="js/i18n.js"></script>
+    <script src="js/pixel-editor.js"></script>
+</body>
+</html>
