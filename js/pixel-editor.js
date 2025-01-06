@@ -8,6 +8,8 @@ class PixelEditor {
         this.lastX = 0;
         this.lastY = 0;
         this.recentColors = new Set(); // 存储最近使用的颜色
+        this.tempCanvas = document.createElement('canvas'); // 用于线条预览
+        this.tempCtx = this.tempCanvas.getContext('2d');
         
         this.initializeCanvas();
         this.initializeTools();
@@ -21,6 +23,12 @@ class PixelEditor {
         this.canvas.style.width = '512px';
         this.canvas.style.height = '512px';
         this.ctx.imageSmoothingEnabled = false;
+        
+        // 同时初始化临时画布
+        this.tempCanvas.width = size;
+        this.tempCanvas.height = size;
+        this.tempCtx.imageSmoothingEnabled = false;
+        
         this.clearCanvas();
     }
 
@@ -28,11 +36,7 @@ class PixelEditor {
         // 工具选择
         document.querySelectorAll('.tool').forEach(tool => {
             tool.addEventListener('click', (e) => {
-                let toolButton = e.target;
-                // 如果点击的是SVG或路径，找到父级tool按钮
-                while (toolButton && !toolButton.classList.contains('tool')) {
-                    toolButton = toolButton.parentElement;
-                }
+                let toolButton = e.target.closest('.tool');
                 if (toolButton) {
                     document.querySelector('.tool.active')?.classList.remove('active');
                     toolButton.classList.add('active');
@@ -80,26 +84,50 @@ class PixelEditor {
             const x = Math.floor((e.clientX - rect.left) * (this.canvas.width / this.canvas.clientWidth));
             const y = Math.floor((e.clientY - rect.top) * (this.canvas.height / this.canvas.clientHeight));
             
+            this.isDrawing = true;
+            this.lastX = x;
+            this.lastY = y;
+
             if (this.currentTool === 'picker') {
                 this.pickColor(x, y);
             } else {
-                this.isDrawing = true;
-                this.lastX = x;
-                this.lastY = y;
                 this.handleDraw(x, y);
             }
         });
 
         this.canvas.addEventListener('mousemove', (e) => {
-            if (!this.isDrawing || this.currentTool === 'picker') return;
+            if (!this.isDrawing) return;
+            
             const rect = this.canvas.getBoundingClientRect();
             const x = Math.floor((e.clientX - rect.left) * (this.canvas.width / this.canvas.clientWidth));
             const y = Math.floor((e.clientY - rect.top) * (this.canvas.height / this.canvas.clientHeight));
-            this.handleDraw(x, y);
+            
+            if (this.currentTool === 'line') {
+                // 线条工具特殊处理
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(this.tempCanvas, 0, 0);
+                this.drawLine(this.lastX, this.lastY, x, y);
+            } else if (this.currentTool !== 'picker') {
+                this.handleDraw(x, y);
+            }
         });
 
-        this.canvas.addEventListener('mouseup', () => this.stopDrawing());
-        this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+        this.canvas.addEventListener('mouseup', () => {
+            if (this.currentTool === 'line') {
+                // 保存当前画布状态到临时画布
+                this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+                this.tempCtx.drawImage(this.canvas, 0, 0);
+            }
+            this.stopDrawing();
+        });
+
+        this.canvas.addEventListener('mouseout', () => {
+            if (this.currentTool === 'line') {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.drawImage(this.tempCanvas, 0, 0);
+            }
+            this.stopDrawing();
+        });
     }
 
     handleDraw(x, y) {
@@ -108,7 +136,7 @@ class PixelEditor {
                 this.drawPixel(x, y);
                 break;
             case 'line':
-                this.drawLine(this.lastX, this.lastY, x, y);
+                // 线条工具在mousemove中处理
                 break;
             case 'fill':
                 this.fillArea(x, y);
@@ -153,8 +181,9 @@ class PixelEditor {
         const sy = (y1 < y2) ? 1 : -1;
         let err = dx - dy;
 
+        this.ctx.fillStyle = this.currentColor;
         while(true) {
-            this.drawPixel(x1, y1);
+            this.ctx.fillRect(x1, y1, 1, 1);
             if (x1 === x2 && y1 === y2) break;
             const e2 = 2 * err;
             if (e2 > -dy) { err -= dy; x1 += sx; }
@@ -167,6 +196,8 @@ class PixelEditor {
         const pixels = imageData.data;
         const targetColor = this.getPixel(imageData, x, y);
         const fillColor = this.hexToRgb(this.currentColor);
+
+        if (!fillColor) return;
 
         const stack = [[x, y]];
         while(stack.length) {
@@ -183,6 +214,9 @@ class PixelEditor {
         }
 
         this.ctx.putImageData(imageData, 0, 0);
+        // 更新临时画布
+        this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+        this.tempCtx.drawImage(this.canvas, 0, 0);
     }
 
     erase(x, y) {
@@ -191,6 +225,7 @@ class PixelEditor {
 
     clearCanvas() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
     }
 
     saveCanvas() {
