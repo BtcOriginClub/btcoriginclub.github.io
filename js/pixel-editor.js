@@ -41,6 +41,10 @@ class PixelEditor {
                     document.querySelector('.tool.active')?.classList.remove('active');
                     toolButton.classList.add('active');
                     this.currentTool = toolButton.id;
+                    
+                    // 保存当前状态到临时画布
+                    this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+                    this.tempCtx.drawImage(this.canvas, 0, 0);
                 }
             });
         });
@@ -88,9 +92,13 @@ class PixelEditor {
             this.lastX = x;
             this.lastY = y;
 
+            // 保存当前状态到临时画布
+            this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+            this.tempCtx.drawImage(this.canvas, 0, 0);
+
             if (this.currentTool === 'picker') {
                 this.pickColor(x, y);
-            } else {
+            } else if (this.currentTool !== 'line') {
                 this.handleDraw(x, y);
             }
         });
@@ -103,9 +111,10 @@ class PixelEditor {
             const y = Math.floor((e.clientY - rect.top) * (this.canvas.height / this.canvas.clientHeight));
             
             if (this.currentTool === 'line') {
-                // 线条工具特殊处理
+                // 恢复之前的状态
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.ctx.drawImage(this.tempCanvas, 0, 0);
+                // 绘制新的线条
                 this.drawLine(this.lastX, this.lastY, x, y);
             } else if (this.currentTool !== 'picker') {
                 this.handleDraw(x, y);
@@ -113,16 +122,15 @@ class PixelEditor {
         });
 
         this.canvas.addEventListener('mouseup', () => {
-            if (this.currentTool === 'line') {
-                // 保存当前画布状态到临时画布
-                this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
-                this.tempCtx.drawImage(this.canvas, 0, 0);
-            }
+            // 保存当前状态到临时画布
+            this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+            this.tempCtx.drawImage(this.canvas, 0, 0);
             this.stopDrawing();
         });
 
         this.canvas.addEventListener('mouseout', () => {
-            if (this.currentTool === 'line') {
+            if (this.currentTool === 'line' && this.isDrawing) {
+                // 如果是线条工具，恢复到之前的状态
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 this.ctx.drawImage(this.tempCanvas, 0, 0);
             }
