@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BtcOriginClub - Pixel Survival Universe</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pixel-editor.css">
 </head>
 <body>
     <div class="language-selector">
@@ -22,30 +23,39 @@
             <p data-i18n="token-description">Explore, build, and trade to earn BTOG tokens</p>
         </div>
 
-        <!-- 添加画板部分 -->
-        <div class="pixel-editor">
-            <div class="tools">
-                <button id="pencil" class="tool active">✏️</button>
-                <button id="line" class="tool">📏</button>
-                <button id="fill" class="tool">🪣</button>
-                <button id="eraser" class="tool">🧹</button>
-                <input type="color" id="colorPicker" value="#000000">
-                <div class="color-presets">
-                    <div class="color-preset" style="background-color: #000000;"></div>
-                    <div class="color-preset" style="background-color: #ffffff;"></div>
-                    <div class="color-preset" style="background-color: #ff0000;"></div>
-                    <div class="color-preset" style="background-color: #00ff00;"></div>
-                    <div class="color-preset" style="background-color: #0000ff;"></div>
+        <div class="editor-container">
+            <div class="toolbar">
+                <div class="tool-group">
+                    <button id="pencil" class="tool active">✏️</button>
+                    <button id="line" class="tool">📏</button>
+                    <button id="fill" class="tool">🪣</button>
+                    <button id="eraser" class="tool">🧹</button>
                 </div>
-                <select id="canvasSize">
-                    <option value="16">16x16</option>
-                    <option value="32">32x32</option>
-                    <option value="64">64x64</option>
-                </select>
-                <button id="clear">Clear</button>
-                <button id="save">Save</button>
+                <div class="color-group">
+                    <input type="color" id="colorPicker" value="#000000">
+                    <div class="color-presets">
+                        <div class="color-preset" style="background-color: #000000;"></div>
+                        <div class="color-preset" style="background-color: #ffffff;"></div>
+                        <div class="color-preset" style="background-color: #ff0000;"></div>
+                        <div class="color-preset" style="background-color: #00ff00;"></div>
+                        <div class="color-preset" style="background-color: #0000ff;"></div>
+                    </div>
+                </div>
+                <div class="size-group">
+                    <select id="canvasSize">
+                        <option value="16">16x16</option>
+                        <option value="32">32x32</option>
+                        <option value="64">64x64</option>
+                    </select>
+                </div>
+                <div class="action-group">
+                    <button id="clear">Clear</button>
+                    <button id="save">Save</button>
+                </div>
             </div>
-            <canvas id="pixelCanvas"></canvas>
+            <div class="canvas-container">
+                <canvas id="pixelCanvas"></canvas>
+            </div>
         </div>
 
         <h2 data-i18n="features-title">Features:</h2>
