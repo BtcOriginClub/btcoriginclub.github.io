@@ -146,10 +146,148 @@ class PixelEditor {
         });
     }
 
-    [其余方法保持不变...]
-}
+    handleDraw(x, y) {
+        switch(this.currentTool) {
+            case 'pencil':
+                this.drawPixel(x, y);
+                break;
+            case 'line':
+                // 线条工具在mousemove中处理
+                break;
+            case 'fill':
+                this.fillArea(x, y);
+                break;
+            case 'eraser':
+                this.erase(x, y);
+                break;
+        }
+    }
 
-// 初始化编辑器
-document.addEventListener('DOMContentLoaded', () => {
-    new PixelEditor();
-});
+    pickColor(x, y) {
+        const imageData = this.ctx.getImageData(x, y, 1, 1).data;
+        // 如果是完全透明的像素（alpha = 0），返回白色
+        if (imageData[3] === 0) {
+            this.currentColor = '#ffffff';
+        } else {
+            this.currentColor = '#' + [imageData[0], imageData[1], imageData[2]]
+                .map(x => x.toString(16).padStart(2, '0'))
+                .join('');
+        }
+        document.getElementById('colorPicker').value = this.currentColor;
+        this.updateRecentColors(this.currentColor);
+    }
+
+    updateRecentColors(color) {
+        if (!color.startsWith('#')) return;
+        this.recentColors.add(color);
+        const recentColorElements = document.querySelectorAll('.recent-color');
+        const colors = Array.from(this.recentColors).slice(-5);
+        recentColorElements.forEach((element, index) => {
+            if (colors[index]) {
+                element.style.backgroundColor = colors[index];
+            }
+        });
+    }
+
+    drawPixel(x, y) {
+        this.ctx.fillStyle = this.currentColor;
+        this.ctx.fillRect(x, y, 1, 1);
+    }
+
+    drawLine(x1, y1, x2, y2) {
+        const dx = Math.abs(x2 - x1);
+        const dy = Math.abs(y2 - y1);
+        const sx = (x1 < x2) ? 1 : -1;
+        const sy = (y1 < y2) ? 1 : -1;
+        let err = dx - dy;
+
+        this.ctx.fillStyle = this.currentColor;
+        while(true) {
+            this.ctx.fillRect(x1, y1, 1, 1);
+            if (x1 === x2 && y1 === y2) break;
+            const e2 = 2 * err;
+            if (e2 > -dy) { err -= dy; x1 += sx; }
+            if (e2 < dx) { err += dx; y1 += sy; }
+        }
+    }
+
+    fillArea(x, y) {
+        const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const pixels = imageData.data;
+        const targetColor = this.getPixel(imageData, x, y);
+        const fillColor = this.hexToRgb(this.currentColor);
+
+        if (!fillColor) return;
+
+        const stack = [[x, y]];
+        while(stack.length) {
+            const [x, y] = stack.pop();
+            const pos = (y * this.canvas.width + x) * 4;
+
+            if (this.compareColors(pixels, pos, targetColor)) {
+                this.setPixel(pixels, pos, fillColor);
+                if (x > 0) stack.push([x - 1, y]);
+                if (x < this.canvas.width - 1) stack.push([x + 1, y]);
+                if (y > 0) stack.push([x, y - 1]);
+                if (y < this.canvas.height - 1) stack.push([x, y + 1]);
+            }
+        }
+
+        this.ctx.putImageData(imageData, 0, 0);
+        // 更新临时画布
+        this.tempCtx.clearRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+        this.tempCtx.drawImage(this.canvas, 0, 0);
+    }
+
+    erase(x, y) {
+        this.ctx.clearRect(x, y, 1, 1);
+        // 在擦除的地方填充白色
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(x, y, 1, 1);
+    }
+
+    clearCanvas() {
+        // 用白色填充画布
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.tempCtx.fillStyle = '#ffffff';
+        this.tempCtx.fillRect(0, 0, this.tempCanvas.width, this.tempCanvas.height);
+    }
+
+    saveCanvas() {
+        const link = document.createElement('a');
+        link.download = 'pixel-art.png';
+        link.href = this.canvas.toDataURL();
+        link.click();
+    }
+
+    getPixel(imageData, x, y) {
+        const pos = (y * imageData.width + x) * 4;
+        return [
+            imageData.data[pos],
+            imageData.data[pos + 1],
+            imageData.data[pos + 2],
+            imageData.data[pos + 3]
+        ];
+    }
+
+    compareColors(pixels, pos, targetColor) {
+        return pixels[pos] === targetColor[0] &&
+               pixels[pos + 1] === targetColor[1] &&
+               pixels[pos + 2] === targetColor[2] &&
+               pixels[pos + 3] === targetColor[3];
+    }
+
+    setPixel(pixels, pos, color) {
+        pixels[pos] = color.r;
+        pixels[pos + 1] = color.g;
+        pixels[pos + 2] = color.b;
+        pixels[pos + 3] = 255;
+    }
+
+    hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3
