@@ -54,3 +54,31 @@ h1 {
     margin-top: 20px;
     font-weight: bold;
 }
+/* 在文件末尾添加以下代码 */
+.features li {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.features li:hover {
+    background-color: #e8e8e8;
+    transform: translateX(10px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#languageSelect {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    background-color: white;
+    font-size: 14px;
+}
+
+#languageSelect:hover {
+    border-color: #999;
+}
