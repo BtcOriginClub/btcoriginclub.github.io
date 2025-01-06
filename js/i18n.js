@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', function() {
+// 等待页面加载完成
+window.onload = function() {
     // 语言配置
     const translations = {
         'en': {
@@ -29,17 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // 获取语言选择器
-    const languageSelect = document.getElementById('languageSelect');
-
-    // 添加语言切换事件
-    languageSelect.addEventListener('change', function() {
-        const selectedLang = this.value;
-        updateContent(selectedLang);
-    });
-
-    // 更新页面内容
-    function updateContent(lang) {
+    // 切换语言函数
+    function switchLanguage(lang) {
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(element => {
             const key = element.getAttribute('data-i18n');
@@ -49,6 +41,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 获取语言选择器并添加事件监听
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', function() {
+            switchLanguage(this.value);
+        });
+    }
+
     // 初始化默认语言
-    updateContent('en');
-});
+    switchLanguage('en');
+};
